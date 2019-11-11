@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% from "_macros.html" import rellenarCamposRegistro %}
+
+{% block navbar %}
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#" data-toggle="modal" data-target="#basicLogin">Login</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#basicRegister">Registro</a></li>
+                <!--class="btn btn-lg btn-success" -->
+
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<!-- modal from bootstrap -->
+<div class="modal fade" id="basicRegister" tabindex="-1" role="dialog" aria-labelledby="basicRegister"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{{url_for("registrousuario")}}" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Registrar Usuario</h4>
+                    {% if verregistro == True %}
+                    <h5 class="modal-title" id="myModalsubLabel">No existe usuario</h5>
+                    {% endif %}
+                </div>
+
+                <div class="modal-body">
+                    <h3>
+
+                        <!-- Formulario Template Registrar Usuario los datos van hacia el index -->
+                        <input type="hidden" name="opcion" value="registrousuario">
+
+                        {% for campo in templateregistro %}
+                            {% if campo.name == "emailRegistro" %}
+                            {{ rellenarCamposRegistro(campo, emailanterior) }}
+                            {% else %}
+                            {{ rellenarCamposRegistro(campo) }}
+                            {% endif %}
+
+                        {% endfor %}
+                    </h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Crear Cuenta</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="basicLogin" tabindex="-1" role="dialog" aria-labelledby="basicLogin" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{{url_for("loginusuario")}}" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Login Usuario</h4>
+                </div>
+
+                <div class="modal-body">
+                    <h3>
+
+                        <!-- Formulario Template Loguear Usuario los datos van hacia el index -->
+                        <input type="hidden" name="opcion" value="loginusuario"> <!-- 0 login / 1 registro -->
+
+                        {% for campo in templatelogin %}
+                        {{ rellenarCamposRegistro(campo) }}
+                        {% endfor %}
+
+                    </h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+
+{% block content %}fsdsdf{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script type="text/javascript">
+    var formErrorsregistro = {% if templateregistro.errors %}true{% else %} false{% endif %};
+    var formErrorsLogin = {% if templatelogin.errors %}true{% else %} false{% endif %};
+    var formverregistro = {% if verregistro == True %}true{% else %} false{% endif %};
+
+    $(document).ready(function () {
+
+        if (formverregistro) {
+            $('#basicRegister').modal('toggle')
+        }
+
+        if (formErrorsregistro) {
+            $('#basicRegister').modal('toggle')
+        }
+        if (formErrorsLogin) {
+            $('#basicLogin').modal('toggle')
+        }
+
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,14 @@
+{
+    "python.pythonPath": "venv\\Scripts\\python.exe",
+    "sqltools.connections": [
+        {
+            "database": "leccion7",
+            "dialect": "MySQL",
+            "name": "leccion",
+            "password": "jose",
+            "port": 3306,
+            "server": "localhost",
+            "username": "root"
+        }
+    ]
+}

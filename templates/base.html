@@ -1,0 +1,79 @@
+{% extends "bootstrap/base.html" %}
+
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for("static", filename="css/reset.css") }}">
+{{ super() }}
+<link rel="icon" href="{{ url_for("static", filename="images/favicon.ico") }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.css">
+{% endblock %}
+
+{% block content %}
+    <!--bloqueado por adblock -->
+    <button type="button" id="btn">Fingerprint</button>
+
+    <div class="container">
+        <div class="card" style="margin-top: 70px">
+            <div class="card-body">
+                <div id="fillme"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- START Bootstrap-Cookie-Alert -->
+    <div class="alert text-center cookiealert" role="alert">
+        <p>The Blablablablablabla website employs cookies to improve your user experience. We have updated our cookie policy
+            to reflect changes in the law on cookies and tracking technologies used on websites. If you continue on this
+            website, you will be providing your consent to our use of cookies.</p>
+        <a href="{{ url_for("showcookiepolicy") }}" target="_blank">Find out more<span
+                class="icn arrow-rightwhite"></span></a>
+        <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close" tabindex="0">I accept cookies
+            from this site<span class="icn tick-w"></span></button>
+    </div>
+    <!-- END Bootstrap-Cookie-Alert -->
+
+
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+
+<script src="{{ url_for("static", filename="js/cookiealert.js") }}" type="text/x-javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/2.1.0/fingerprint2.min.js"
+    integrity="sha256-S/UuH5LOnqk/MwJZQ9ANv+XnP/HI3cFQeu6KyC003A8=" crossorigin="anonymous"></script>
+
+
+<script type="application/javascript" content="javascript">
+
+    document.getElementById("btn").addEventListener("click", function () {
+        fingerprintReport();
+    });
+
+
+    var fingerprintReport = function () {
+        var d1 = new Date();
+        console.log("hola");
+
+
+        if (window.requestIdleCallback) {
+            requestIdleCallback(function () {
+                var fingerprint = new Fingerprint2.get(function (components) {
+                    console.log(components) // an array of components: {key: ..., value: ...}
+                })
+            })
+        }
+        else {
+            setTimeout(function () {
+                var fingerprint = new Fingerprint2.get(function (components) {
+                    console.log(components) // an array of components: {key: ..., value: ...}
+                })
+            }, 500)
+        }
+    }
+
+
+
+</script>
+{% endblock %}
