@@ -134,8 +134,10 @@ def loginusuario():
                     print("intentos=".format(intentos))
 
                     if intentos > 3:
-                        # todo: meter en la db de sospechosos.
-                        return abort(404)
+                        # TODO: meter en la db de sospechosos.
+                        # captcha despues de 
+                        return redirect(url_for("login"))
+                        # return abort(404)
                     else:
                         templateregistro = FormularioRegistro()
 
@@ -210,6 +212,8 @@ def registrousuario():
         #                                                           request.form["nombreRegistro"]
         #                                                           )
         pass
+    
+    # PARA REGISTRO 
 
     if request.form["opcion"] == "registrousuario":
         templateregistro = FormularioRegistro(request.form)
@@ -240,7 +244,9 @@ def registrousuario():
                                                                      templateregistro.nombreRegistro
                                                                      )
                     if respuesta == True:
-                        return redirect(url_for("profile"))
+                        # mandarlo a login para que valide que es usuario correcto
+                        # en vez de mandarlo directo al profile.
+                        return redirect(url_for("login"))
 
                     else:
                         return redirect(url_for("registro"))
