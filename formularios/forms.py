@@ -42,16 +42,6 @@ def comprobarDBCorreoLogin(form, field: StringField):
         raise ValidationError("Error {0}".format(ok[1]))
 
 
-def comprobarRedisLogin(form, field: StringField):
-    print("comprobar correo => campo {0}".format(field.data))
-    # redireccion
-    ok = redisman.comprobarcorreo(field.data)
-    return ok
-
-    # if ok == False:
-    #     raise ValidationError("No existe correo")
-
-
 def comprobarExisteUsuario(form, field: StringField):
     print("comprobar usuario => campo {0}".format(field.data))
     # if red.comprobarusuario(field.data) == True:
@@ -81,7 +71,7 @@ class FormularioLogin(Form):
 
     ], description="Email")
 
-    emailhidden = HiddenField("email")
+    emailLoginhidden = HiddenField("email")
 
     passwordLogin = PasswordField("Password: ", validators=[
         validators.data_required(
@@ -97,6 +87,29 @@ class FormularioLogin(Form):
 
     ], description="Repite Password")
 
+    def comprobarRedisLogin(self, form, field: StringField):
+        print("comprobar correo => campo {0}".format(field.data))
+        # redireccion
+        ok = redisman.comprobarcorreo(field.data)
+        return ok
+
+        # if ok == False:
+        #     raise ValidationError("No existe correo")
+        
+    def comprobarEmailPasswordMysql(self, form, email: StringField, password: PasswordField):
+        print("comprobar correo => campo {0}".format(email.data))
+
+        ok = sqlman.comprobarEmailLogin(email.data)
+        if ok[0] == True:
+            # no ha dado errores
+            if ok[1] == None:
+                raise ValidationError("No existe el correo")
+            # else:
+            #     return ok[1]
+        elif ok[0] == False:
+            # ok[0][1][0][0]
+            raise ValidationError("Error {0}".format(ok[1]))
+
 
 class FormularioRegistro(Form):
     nombreRegistro = StringField(label="Nombre contacto", validators=[
@@ -107,6 +120,8 @@ class FormularioRegistro(Form):
         comprobarTodoAlfabeto
 
     ], description="Nombre contacto")
+
+    emailRegistrohidden = HiddenField("email")
 
     emailRegistro = EmailField("email: ", validators=[
         validators.data_required(message="Este campo es requerido"),
@@ -132,3 +147,23 @@ class FormularioRegistro(Form):
 
     # aceptoTerminos = BooleanField("Acepto los terminos", validators=[validators.data_required()],
     #                               description="Acepto los terminos")
+
+    def comprobarRedisLogin(self, form, field: StringField):
+        print("comprobar correo => campo {0}".format(field.data))
+        # redireccion
+        ok = redisman.comprobarcorreo(field.data)
+        return ok
+
+        # if ok == False:
+        #     raise ValidationError("No existe correo")
+        
+    def comprobarDBCorreoRegistro(self, form, field: StringField):
+        print("comprobar correo => campo {0}".format(field.data))
+
+        ok = sqlman.comprobarEmail(field.data)
+        if ok[0] == 0:
+            return ok
+        elif ok[0] == 1:
+            raise ValidationError("Ya existe correo")
+        elif ok[0] == 2:
+            raise ValidationError("Error {0}".format(ok[1]))

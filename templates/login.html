@@ -19,7 +19,7 @@
 <div class="modal fade" id="basicRegister" tabindex="-1" role="dialog" aria-labelledby="basicRegister"
     aria-hidden="true">
     <div class="modal-dialog">
-        <form action="{{url_for("registrousuario")}}" method="post">
+        <form action="{{ url_for("registrousuario") }}" method="post">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -37,11 +37,10 @@
 
                         {% for campo in templateregistro %}
                             {% if campo.name == "emailRegistro" %}
-                            {{ rellenarCamposRegistro(campo, emailanterior) }}
+                                {{ rellenarCamposRegistro(campo, emailanterior) }}
                             {% else %}
-                            {{ rellenarCamposRegistro(campo) }}
+                                {{ rellenarCamposRegistro(campo) }}
                             {% endif %}
-
                         {% endfor %}
                     </h3>
                 </div>
@@ -86,6 +85,14 @@
     </div>
 </div>
 
+
+{% if usuario_no == True %}
+
+<a href=" {{ url_for("login") }} ">
+<button>Email ya registrado</button>
+</a>
+
+{% endif %}
 
 
 {% endblock %}
