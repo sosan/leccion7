@@ -163,9 +163,8 @@ def loginusuario():
                     intentos = int(request.form["intentos"])
                 except ValueError:
                     raise Exception("valor no valido")
-                
+
                 intentos += 1
-                
 
                 context = {
                     "templatelogin": templatelogin,
@@ -236,15 +235,16 @@ def registrousuario():
                 ok = templateregistro.comprobarDBCorreoRegistro(
                     templateregistro, templateregistro.emailRegistro)
                 if ok == True:
-                    templateregistro.anadirCorreoUsuario(templateregistro.emailRegistro,
-                                                        templateregistro.passwordRegistro,
-                                                        templateregistro.nombreRegistro 
-                                                        )
-                    
-                    
-                    
-                    
-                    
+                    respuesta = templateregistro.anadirCorreoUsuario(templateregistro.emailRegistro,
+                                                                     templateregistro.passwordRegistro,
+                                                                     templateregistro.nombreRegistro
+                                                                     )
+                    if respuesta == True:
+                        return redirect(url_for("profile"))
+
+                    else:
+                        return redirect(url_for("registro"))
+
                 else:
                     return redirect(url_for("login"))
 
