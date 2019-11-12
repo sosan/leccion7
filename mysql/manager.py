@@ -6,7 +6,8 @@ class ManagerMysql:
     def __init__(self, host, user, password, db, port=3306):
 
         try:
-            self.conexion = pymysql.connect(host=host, user=user, password=password, database=db, port=port)
+            self.conexion = pymysql.connect(
+                host=host, user=user, password=password, database=db, port=port)
             self.cursor = self.conexion.cursor()
             # self.cursor.execute("select * from leccion7.usuarios")
             # print(self.cursor.fetchall())
@@ -18,6 +19,16 @@ class ManagerMysql:
     def comprobarEmailLogin(self, email):
         sql = """SELECT email, pass, active FROM leccion7.usuarios where email="{0}"
                """.format(email)
+        datos = self.queryinternal(sql)
+        return datos
+
+    def anadirCorreoUsuario(self, email, password, nombre):
+        sql = """
+        INSER INTO leccion7.usuarios (nombre, email, pass)
+        VALUES
+        ({0}, {1}, {2})
+        """.format(nombre, email, password)
+
         datos = self.queryinternal(sql)
         return datos
 

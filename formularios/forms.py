@@ -95,7 +95,7 @@ class FormularioLogin(Form):
 
         # if ok == False:
         #     raise ValidationError("No existe correo")
-        
+
     def comprobarEmailPasswordMysql(self, form, email: StringField, password: PasswordField):
         print("comprobar correo => campo {0}".format(email.data))
 
@@ -156,7 +156,7 @@ class FormularioRegistro(Form):
 
         # if ok == False:
         #     raise ValidationError("No existe correo")
-        
+
     def comprobarDBCorreoRegistro(self, form, field: StringField):
         print("comprobar correo => campo {0}".format(field.data))
 
@@ -167,3 +167,13 @@ class FormularioRegistro(Form):
             raise ValidationError("Ya existe correo")
         elif ok[0] == 2:
             raise ValidationError("Error {0}".format(ok[1]))
+
+    def anadirCorreoUsuario(self, form, email: StringField, password: PasswordField, nombre: StringField):
+
+        ok = sqlman.anadirCorreoUsuario(email.data, password, nombre)
+        if ok[0] == 0:
+            return ok
+        elif ok[0] == 1:
+            raise ValidationError("Ya existe correo")
+        elif ok[0] == 2:
+            raise ValidationError("Error: {0}".format(ok[1]))

@@ -45,6 +45,7 @@ def login():
     context = {
         "templatelogin": templatelogin,
         "templateregistro": templateregistro,
+        "emailanterior": "",
         "intentos": 1,
         "verloginmodal": True,
         "verregistromodal": False
@@ -52,7 +53,6 @@ def login():
 
     # return render_template("login.html", templatelogin=templatelogin, templateregistro=templateregistro, intentos=1)
     return render_template("login.html", datos=context)
-
 
 
 @app.route("/login", methods=["GET"])
@@ -63,6 +63,7 @@ def mostrarlogin_modal():
     context = {
         "templatelogin": templatelogin,
         "templateregistro": templateregistro,
+        "emailanterior": "",
         "intentos": 1,
         "verloginmodal": True,
         "verregistromodal": False
@@ -74,7 +75,6 @@ def mostrarlogin_modal():
     return render_template("login.html", datos=context)
 
 
-
 @app.route("/login", methods=["GET"])
 def mostrarregistro_modal():
 
@@ -84,10 +84,14 @@ def mostrarregistro_modal():
     context = {
         "templatelogin": templatelogin,
         "templateregistro": templateregistro,
-        "intentos": 1
+        "emailanterior": "",
+        "intentos": 1,
+        "verloginmodal": False,
+        "verregistromodal": True
     }
 
-    return render_template("login.html", templatelogin=templatelogin, templateregistro=templateregistro, intentos=1, verregistro=True)
+    # return render_template("login.html", templatelogin=templatelogin, templateregistro=templateregistro, intentos=1, verregistro=True)
+    return render_template("login.html", datos=context)
 
 
 @app.route("/login", methods=["POST"])
@@ -95,6 +99,10 @@ def loginusuario():
     # jaskjasd@gmail.com
     # borrar cookie de session
     # session.clear()
+    if request.form["emailLoginhidden"] != "":
+        # uuu posible spam bot
+        # TODO: ponerlo en listaado de sospechosos
+        pass
 
     if request.form["opcion"] == "loginusuario":
 
@@ -111,21 +119,39 @@ def loginusuario():
 
                     session["email"] = request.form["emailLogin"]
                     session["password"] = request.form["passwordLogin"]
-                    session["nombre"] = datos[0][2]
+                    # session["nombre"] = datos[0][2]
 
                     return redirect(url_for("profile"))
 
                 else:
                     # intentos 3 ?
-                    intentos = int(request.form["intentos"])
+                    try:
+                        intentos = int(request.form["intentos"])
+                    except ValueError:
+                        raise Exception("valor no valido")
+
                     intentos += 1
+                    print("intentos=".format(intentos))
+
                     if intentos > 3:
                         # todo: meter en la db de sospechosos.
                         return abort(404)
                     else:
                         templateregistro = FormularioRegistro()
-                        return render_template("login.html", templatelogin=templatelogin, templateregistro=templateregistro,
-                                               verregistro=True, emailanterior=templatelogin.emailLogin.data, intentos=intentos)
+
+                        context = {
+                            "templatelogin": templatelogin,
+                            "templateregistro": templateregistro,
+                            "emailanterior": templatelogin.emailLogin.data,
+                            "intentos": intentos,
+                            "verloginmodal": False,
+                            "verregistromodal": True,
+                        }
+
+                        return render_template("login.html", datos=context)
+
+                        # return render_template("login.html", templatelogin=templatelogin, templateregistro=templateregistro,
+                        #                        verregistro=True, emailanterior=templatelogin.emailLogin.data, intentos=intentos)
 
             else:
                 # el email no existe
@@ -133,8 +159,26 @@ def loginusuario():
                 templateregistro = FormularioRegistro()
                 templateregistro.emailRegistro = templatelogin.emailLogin
 
-                return render_template("login.html", templatelogin=templatelogin, templateregistro=templateregistro,
-                                       verregistro=True, emailanterior=templatelogin.emailLogin.data)
+                try:
+                    intentos = int(request.form["intentos"])
+                except ValueError:
+                    raise Exception("valor no valido")
+                
+                intentos += 1
+                
+
+                context = {
+                    "templatelogin": templatelogin,
+                    "templateregistro": templateregistro,
+                    "emailanterior": templatelogin.emailLogin.data,
+                    "intentos": intentos,
+                    "verloginmodal": False,
+                    "verregistromodal": True,
+                }
+                return render_template("login.html", datos=context)
+
+                # return render_template("login.html", templatelogin=templatelogin, templateregistro=templateregistro,
+                #                        verregistro=True, emailanterior=templatelogin.emailLogin.data)
 
             print(templatelogin.data["email"])
             print("Login correcto")
@@ -142,7 +186,17 @@ def loginusuario():
             print("Login incorrecto")
             templateregistro = FormularioRegistro()
 
-            return render_template("login.html", templatelogin=templatelogin, templateregistro=templateregistro)
+            context = {
+                "templatelogin": templatelogin,
+                "templateregistro": templateregistro,
+                "emailanterior": templatelogin.emailLogin.data,
+                "intentos": 1,
+                "verloginmodal": True,
+                "verregistromodal": False,
+            }
+            return render_template("login.html", datos=context)
+
+            # return render_template("login.html", templatelogin=templatelogin, templateregistro=templateregistro)
 
 
 @app.route("/registro", methods=["POST"])
@@ -182,7 +236,15 @@ def registrousuario():
                 ok = templateregistro.comprobarDBCorreoRegistro(
                     templateregistro, templateregistro.emailRegistro)
                 if ok == True:
-                    return render_template("")
+                    templateregistro.anadirCorreoUsuario(templateregistro.emailRegistro,
+                                                        templateregistro.passwordRegistro,
+                                                        templateregistro.nombreRegistro 
+                                                        )
+                    
+                    
+                    
+                    
+                    
                 else:
                     return redirect(url_for("login"))
 
@@ -209,7 +271,6 @@ def profile():
         password = session["passwordLogin"]
         nombre = session["nombre"]
         session["mostrarlogin"] = False
-        
 
         return render_template("profile.html", nombre=nombre, email=email)
 

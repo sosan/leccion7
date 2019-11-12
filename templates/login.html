@@ -19,7 +19,7 @@
 <div class="modal fade" id="basicRegister" tabindex="-1" role="dialog" aria-labelledby="basicRegister"
     aria-hidden="true">
     <div class="modal-dialog">
-        <form action="{{ url_for("registrousuario") }}" method="post">
+        <form action="{{ url_for("registrousuario") }}" method="post" autocomplete="off">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -34,13 +34,13 @@
 
                         <!-- Formulario Template Registrar Usuario los datos van hacia el index -->
                         <input type="hidden" name="opcion" value="registrousuario">
-
-                        {% for campo in templateregistro %}
-                            {% if campo.name == "emailRegistro" %}
-                                {{ rellenarCamposRegistro(campo, emailanterior) }}
-                            {% else %}
-                                {{ rellenarCamposRegistro(campo) }}
-                            {% endif %}
+                        <input type="hidden" name="intentos" value="{{ datos["intentos"] }}">
+                        {% for campo in datos["templateregistro"] %}
+                        {% if campo.name == "emailRegistro" %}
+                        {{ rellenarCamposRegistro(campo, emailanterior) }}
+                        {% else %}
+                        {{ rellenarCamposRegistro(campo) }}
+                        {% endif %}
                         {% endfor %}
                     </h3>
                 </div>
@@ -56,7 +56,7 @@
 
 <div class="modal fade" id="basicLogin" tabindex="-1" role="dialog" aria-labelledby="basicLogin" aria-hidden="true">
     <div class="modal-dialog">
-        <form action="{{url_for("loginusuario")}}" method="post">
+        <form action="{{url_for("loginusuario")}}" method="post" autocomplete="off">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -68,8 +68,9 @@
 
                         <!-- Formulario Template Loguear Usuario los datos van hacia el index -->
                         <input type="hidden" name="opcion" value="loginusuario"> <!-- 0 login / 1 registro -->
+                        <input type="hidden" name="intentos" value="{{ datos["intentos"] }}">
 
-                        {% for campo in templatelogin %}
+                        {% for campo in datos["templatelogin"] %}
                         {{ rellenarCamposRegistro(campo) }}
                         {% endfor %}
 
@@ -86,13 +87,7 @@
 </div>
 
 
-{% if usuario_no == True %}
 
-<a href=" {{ url_for("login") }} ">
-<button>Email ya registrado</button>
-</a>
-
-{% endif %}
 
 
 {% endblock %}
@@ -104,14 +99,20 @@
 {{ super() }}
 
 <script type="text/javascript">
-    var formErrorsregistro = {% if templateregistro.errors %}true{% else %} false{% endif %};
-    var formErrorsLogin = {% if templatelogin.errors %}true{% else %} false{% endif %};
-    var formverregistro = {% if verregistro == True %}true{% else %} false{% endif %};
+    var formErrorsregistro = {% if datos["templateregistro"].errors %}true{% else %} false{% endif %};
+    var formErrorsLogin = {% if datos["templatelogin"].errors %}true{% else %} false{% endif %};
+
+    var formverregistro = {% if datos["verregistromodal"] == True %}true{% else %} false{% endif %};
+    var formverlogin = {% if datos["verloginmodal"] == True %}true{% else %} false{% endif %};
 
     $(document).ready(function () {
 
         if (formverregistro) {
             $('#basicRegister').modal('toggle')
+        }
+
+        if (formverlogin) {
+            $('#basicLogin').modal('toggle')
         }
 
         if (formErrorsregistro) {
