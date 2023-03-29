@@ -8,7 +8,7 @@ Jinja2==2.11.3
 MarkupSafe==1.1.1
 pycodestyle==2.5.0
 PyMySQL==0.9.3
-redis==3.3.11
+redis==4.5.3
 visitor==0.1.3
 Werkzeug==2.2.3
 WTForms==2.2.1
